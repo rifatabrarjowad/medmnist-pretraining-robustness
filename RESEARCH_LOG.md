@@ -65,3 +65,20 @@ The selection followed the preregistered rule of choosing the learning rate
 with the highest validation balanced accuracy.
 
 The selected value is now frozen for all subsequent scratch-model experiments.
+
+### PneumoniaMNIST core training completed
+
+Completed all 10 preregistered PneumoniaMNIST core runs:
+
+- ImageNet pretrained ResNet-18: seeds 0–4
+- Randomly initialized ResNet-18: seeds 0–4
+
+Validation balanced accuracy summary:
+
+- Pretrained: mean ≈ 0.9927, SD ≈ 0.0031
+- Scratch: mean ≈ 0.9814, SD ≈ 0.0025
+
+These validation results are training-selection diagnostics only.
+They are not the primary research endpoint.
+
+All best-validation checkpoints were saved locally.

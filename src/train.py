@@ -1,5 +1,7 @@
+import argparse
 import os
 import random
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,14 +9,23 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.models import resnet18, ResNet18_Weights
-from medmnist import PneumoniaMNIST
 from sklearn.metrics import balanced_accuracy_score
 
+from medmnist import BloodMNIST, DermaMNIST, PneumoniaMNIST
 
-SEED = 0
-EPOCHS = 3
-BATCH_SIZE = 32
-LR = 1e-4
+
+DATASETS = {
+    "blood": (BloodMNIST, 8),
+    "derma": (DermaMNIST, 7),
+    "pneumonia": (PneumoniaMNIST, 2),
+}
+
+PRETRAINED_LR = 1e-4
+SCRATCH_LR = 3e-4
+
+BATCH_SIZE = 64
+MAX_EPOCHS = 50
+PATIENCE = 10
 
 
 def set_seed(seed):
@@ -29,53 +40,62 @@ def set_seed(seed):
 def get_device():
     if torch.cuda.is_available():
         return torch.device("cuda")
-    elif torch.backends.mps.is_available():
+
+    if torch.backends.mps.is_available():
         return torch.device("mps")
-    else:
-        return torch.device("cpu")
+
+    return torch.device("cpu")
 
 
-def get_dataloaders():
-    transform = transforms.Compose([
+def get_transform():
+    return transforms.Compose([
         transforms.Grayscale(num_output_channels=3),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=[0.485, 0.456, 0.406],
-            std=[0.229, 0.224, 0.225]
-        )
+            std=[0.229, 0.224, 0.225],
+        ),
     ])
 
-    train_dataset = PneumoniaMNIST(
+
+def get_dataloaders(dataset_name):
+    dataset_class, _ = DATASETS[dataset_name]
+
+    transform = get_transform()
+
+    train_dataset = dataset_class(
         split="train",
         transform=transform,
         download=True,
-        size=224
+        size=224,
     )
 
-    val_dataset = PneumoniaMNIST(
+    val_dataset = dataset_class(
         split="val",
         transform=transform,
         download=True,
-        size=224
+        size=224,
     )
 
     train_loader = DataLoader(
         train_dataset,
         batch_size=BATCH_SIZE,
-        shuffle=True
+        shuffle=True,
     )
 
     val_loader = DataLoader(
         val_dataset,
         batch_size=BATCH_SIZE,
-        shuffle=False
+        shuffle=False,
     )
 
     return train_loader, val_loader
 
 
-def build_model(pretrained=True):
-    if pretrained:
+def build_model(dataset_name, condition):
+    _, num_classes = DATASETS[dataset_name]
+
+    if condition == "pretrained":
         model = resnet18(
             weights=ResNet18_Weights.IMAGENET1K_V1
         )
@@ -84,7 +104,7 @@ def build_model(pretrained=True):
 
     model.fc = nn.Linear(
         model.fc.in_features,
-        2
+        num_classes,
     )
 
     return model
@@ -99,12 +119,14 @@ def evaluate(model, loader, device):
     with torch.no_grad():
         for images, labels in loader:
             images = images.to(device)
-
             labels = labels.squeeze(1).long().to(device)
 
             outputs = model(images)
 
-            preds = torch.argmax(outputs, dim=1)
+            preds = torch.argmax(
+                outputs,
+                dim=1
+            )
 
             y_true.extend(
                 labels.cpu().numpy()
@@ -120,54 +142,65 @@ def evaluate(model, loader, device):
     )
 
 
-def train_model(pretrained=True):
-    set_seed(SEED)
+def train(dataset_name, condition, seed):
+    set_seed(seed)
 
     device = get_device()
 
     print("Device:", device)
+    print("Dataset:", dataset_name)
+    print("Condition:", condition)
+    print("Seed:", seed)
 
-    train_loader, val_loader = get_dataloaders()
+    train_loader, val_loader = get_dataloaders(
+        dataset_name
+    )
 
     model = build_model(
-        pretrained=pretrained
+        dataset_name,
+        condition
     ).to(device)
+
+    if condition == "pretrained":
+        lr = PRETRAINED_LR
+    else:
+        lr = SCRATCH_LR
+
+    print("Learning rate:", lr)
 
     criterion = nn.CrossEntropyLoss()
 
     optimizer = torch.optim.AdamW(
         model.parameters(),
-        lr=LR
+        lr=lr,
     )
 
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer,
-        T_max=EPOCHS
+        T_max=MAX_EPOCHS,
     )
 
-    condition = (
-        "pretrained"
-        if pretrained
-        else "scratch"
-    )
-
-    print(f"\nTraining condition: {condition}")
-
-    best_val_bacc = -1
+    best_val_bacc = -1.0
+    best_epoch = -1
+    patience_counter = 0
 
     os.makedirs(
-        "results/raw",
+        "results/checkpoints",
         exist_ok=True
     )
 
-    for epoch in range(EPOCHS):
+    checkpoint_path = (
+        f"results/checkpoints/"
+        f"{dataset_name}_{condition}_seed{seed}.pt"
+    )
+
+    for epoch in range(MAX_EPOCHS):
         model.train()
 
         running_loss = 0.0
 
         for images, labels in train_loader:
             images = images.to(device)
-
             labels = labels.squeeze(1).long().to(device)
 
             optimizer.zero_grad()
@@ -188,8 +221,8 @@ def train_model(pretrained=True):
         scheduler.step()
 
         avg_loss = (
-            running_loss
-            / len(train_loader)
+            running_loss /
+            len(train_loader)
         )
 
         val_bacc = evaluate(
@@ -199,33 +232,70 @@ def train_model(pretrained=True):
         )
 
         print(
-            f"Epoch {epoch + 1}/{EPOCHS} "
-            f"| Loss: {avg_loss:.4f} "
-            f"| Val bACC: {val_bacc:.4f}"
+            f"Epoch {epoch + 1:02d}/{MAX_EPOCHS} "
+            f"| Loss {avg_loss:.4f} "
+            f"| Val bACC {val_bacc:.4f}"
         )
 
         if val_bacc > best_val_bacc:
             best_val_bacc = val_bacc
-
-            checkpoint_path = (
-                f"results/raw/"
-                f"pneumonia_{condition}_smoke.pt"
-            )
+            best_epoch = epoch + 1
+            patience_counter = 0
 
             torch.save(
                 model.state_dict(),
                 checkpoint_path
             )
 
-    print(
-        f"Best validation bACC: "
-        f"{best_val_bacc:.4f}"
+        else:
+            patience_counter += 1
+
+        if patience_counter >= PATIENCE:
+            print("Early stopping")
+            break
+
+    print("\nTraining complete")
+    print("Best epoch:", best_epoch)
+    print("Best val bACC:", best_val_bacc)
+    print("Saved:", checkpoint_path)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--dataset",
+        required=True,
+        choices=[
+            "blood",
+            "derma",
+            "pneumonia",
+        ],
     )
 
-    print(
-        "Checkpoint saved ✅"
+    parser.add_argument(
+        "--condition",
+        required=True,
+        choices=[
+            "pretrained",
+            "scratch",
+        ],
     )
+
+    parser.add_argument(
+        "--seed",
+        required=True,
+        type=int,
+    )
+
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
-    train_model(pretrained=False)
+    args = parse_args()
+
+    train(
+        dataset_name=args.dataset,
+        condition=args.condition,
+        seed=args.seed,
+    )
