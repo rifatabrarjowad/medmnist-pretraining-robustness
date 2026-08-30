@@ -23,3 +23,14 @@
 
 - Convert grayscale images to 3 channels.
 - Verify pretrained and randomly initialized ResNet-18 forward passes.
+
+### Model pipeline smoke test
+
+- Converted PneumoniaMNIST grayscale images to 3-channel input.
+- Verified batch shape: [8, 3, 224, 224].
+- Loaded ResNet-18 with ImageNet pretrained weights.
+- Loaded identical ResNet-18 with random initialization.
+- Verified Apple MPS device is available and used.
+- Both models completed a forward pass successfully.
+- Output shape for both models: [8, 2].
+- No experimental training results collected yet.
