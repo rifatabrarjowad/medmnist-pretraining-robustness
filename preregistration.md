@@ -5,7 +5,7 @@
 **Status:** Committed BEFORE any experimental run. Any deviation from this document must be recorded in `DEVIATIONS.md` with a date, a reason, and the commit hash at which it was decided.
 
 **Date committed:** August 30, 2026
-**Commit hash of this file:** _[fill in after commit]_
+**Commit hash of this file:** 5b1f1b4
 
 ---
 
