@@ -1,0 +1,20 @@
+model: resnet18
+
+pretrained_lr: 0.0001
+scratch_lr: 0.0003
+
+batch_size: 64
+max_epochs: 50
+early_stopping_patience: 10
+
+optimizer: adamw
+scheduler: cosine_annealing
+
+image_size: 224
+
+seeds:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4

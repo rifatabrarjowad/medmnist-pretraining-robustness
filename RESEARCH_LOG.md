@@ -45,3 +45,23 @@
 - Checkpoints were saved locally.
 - These are smoke-test results only and will NOT be reported as research findings.
 - No scientific comparison is made from these runs.
+
+### Scratch learning-rate fairness search
+
+The preregistered scratch learning-rate search was completed on BloodMNIST
+using seed 0.
+
+Results:
+
+| Learning Rate | Best Val bACC | Best Epoch |
+| ------------- | ------------: | ---------: |
+| 1e-4          |      0.911012 |          3 |
+| 3e-4          |      0.984022 |         20 |
+| 1e-3          |      0.982944 |         19 |
+
+Selected scratch learning rate: **3e-4**
+
+The selection followed the preregistered rule of choosing the learning rate
+with the highest validation balanced accuracy.
+
+The selected value is now frozen for all subsequent scratch-model experiments.
