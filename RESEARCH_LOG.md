@@ -34,3 +34,14 @@
 - Both models completed a forward pass successfully.
 - Output shape for both models: [8, 2].
 - No experimental training results collected yet.
+
+### Mini-training smoke test
+
+- Successfully trained pretrained ResNet-18 for 3 epochs on PneumoniaMNIST.
+- Best validation balanced accuracy: 0.9875.
+- Successfully trained randomly initialized ResNet-18 for 3 epochs.
+- Best validation balanced accuracy: 0.9699.
+- Both training loops completed on Apple MPS.
+- Checkpoints were saved locally.
+- These are smoke-test results only and will NOT be reported as research findings.
+- No scientific comparison is made from these runs.
