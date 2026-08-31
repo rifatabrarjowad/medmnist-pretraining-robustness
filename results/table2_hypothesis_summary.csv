@@ -1,0 +1,5 @@
+Hypothesis,Prediction,Key result,Verdict
+H1,Task-specific pretraining benefit smaller than noise/blur/digital,Interaction reversed: Blood +1.0009; Derma +0.5657,Rejected
+H2,Pretraining benefit increases as training data decreases,Gap increased from +0.47 pp at 100% to +3.72 pp at 10%,Supported
+H3,Clean accuracy gain explains much of robustness gain,Clean gain negatively associated with corrupted gain,Rejected
+H4,Pretraining benefit decreases monotonically with severity,Only 2/13 family cells were monotonically decreasing,Rejected
