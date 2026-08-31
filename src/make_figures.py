@@ -254,76 +254,177 @@ plt.savefig(
 
 plt.close()
 
-
 # ============================================================
-# FIGURE 4 — H3 CLEAN GAIN VS CORRUPTED GAIN
+# FIGURE 4 — SEVERITY TREND WITH PAIRED-SEED BOOTSTRAP CI
 # ============================================================
 
-h3 = pd.read_csv(
-    "results/h3_paired_effects.csv"
+h4_ci = pd.read_csv(
+    "results/h4_severity_family_ci.csv"
 )
 
+datasets = ["blood", "derma", "pneumonia"]
 
-plt.figure(figsize=(7, 5))
+fig, axes = plt.subplots(
+    1,
+    3,
+    figsize=(15, 5),
+    sharey=True,
+)
 
-for dataset in datasets:
+for ax, dataset in zip(axes, datasets):
 
-    temp = h3[
-        h3["dataset"] == dataset
-    ]
+    temp = h4_ci[
+        h4_ci["dataset"] == dataset
+    ].copy()
 
-    plt.scatter(
-        temp["clean_gain"] * 100,
-        temp["corrupted_gain"] * 100,
-        label=dataset.capitalize(),
+    for family in sorted(temp["family"].unique()):
+
+        fam = temp[
+            temp["family"] == family
+        ].sort_values("severity")
+
+        x = fam["severity"].to_numpy()
+
+        y = (
+            fam["mean_gap"].to_numpy()
+            * 100
+        )
+
+        lower = (
+            fam["mean_gap"].to_numpy()
+            - fam["ci_low"].to_numpy()
+        ) * 100
+
+        upper = (
+            fam["ci_high"].to_numpy()
+            - fam["mean_gap"].to_numpy()
+        ) * 100
+
+        ax.errorbar(
+            x,
+            y,
+            yerr=[lower, upper],
+            marker="o",
+            capsize=3,
+            label=family,
+        )
+
+    ax.axhline(
+        0,
+        linewidth=1,
     )
 
+    ax.set_title(
+        dataset.capitalize()
+    )
 
-plt.axhline(
-    0,
-    linewidth=1,
+    ax.set_xlabel(
+        "Corruption severity"
+    )
+
+    ax.set_xticks(
+        [1, 2, 3, 4, 5]
+    )
+
+axes[0].set_ylabel(
+    "Pretrained − Scratch bACC (pp)"
 )
 
-plt.axvline(
-    0,
-    linewidth=1,
+axes[-1].legend(
+    title="Family",
+    bbox_to_anchor=(1.02, 1),
+    loc="upper left",
 )
 
-plt.xlabel(
-    "Clean accuracy gain (percentage points)"
+fig.suptitle(
+    "Effect of corruption severity on the pretraining advantage"
 )
-
-plt.ylabel(
-    "Corrupted accuracy gain (percentage points)"
-)
-
-plt.title(
-    "Clean accuracy gain does not predict corruption robustness"
-)
-
-plt.legend()
 
 plt.tight_layout()
 
 plt.savefig(
-    "figures/h3_clean_vs_corrupted.pdf",
+    "figures/figure4_severity_with_ci.pdf",
     bbox_inches="tight",
 )
 
 plt.savefig(
-    "figures/h3_clean_vs_corrupted.png",
+    "figures/figure4_severity_with_ci.png",
     dpi=300,
     bbox_inches="tight",
 )
 
 plt.close()
 
+print("Figure 4 with bootstrap CIs created.")
 
-print("Figures created successfully.")
 
-print("\nFiles:")
+# ============================================================
+# COMPOSITE FIGURE 1 — FAMILY EFFECTS ACROSS DATASETS
+# ============================================================
 
-for f in sorted(
-    os.listdir("figures")
+family = pd.read_csv(
+    "results/family_summary.csv"
+)
+
+fig, axes = plt.subplots(
+    1,
+    3,
+    figsize=(15, 5),
+    sharex=False,
+)
+
+for ax, dataset in zip(
+    axes,
+    ["blood", "derma", "pneumonia"],
 ):
-    print(f)
+
+    temp = family[
+        family["dataset"] == dataset
+    ].copy()
+
+    temp = temp.sort_values(
+        "mean_delta_bacc"
+    )
+
+    ax.barh(
+        temp["family"],
+        temp["mean_delta_bacc"] * 100,
+    )
+
+    ax.axvline(
+        0,
+        linewidth=1,
+    )
+
+    ax.set_title(
+        dataset.capitalize()
+    )
+
+    ax.set_xlabel(
+        "Pretrained − Scratch bACC (pp)"
+    )
+
+axes[0].set_ylabel(
+    "Corruption family"
+)
+
+fig.suptitle(
+    "Corruption-family dependence of ImageNet pretraining"
+)
+
+plt.tight_layout()
+
+plt.savefig(
+    "figures/figure1_family_effects.pdf",
+    bbox_inches="tight",
+)
+
+plt.savefig(
+    "figures/figure1_family_effects.png",
+    dpi=300,
+    bbox_inches="tight",
+)
+
+plt.close()
+
+print("Composite Figure 1 created.")
