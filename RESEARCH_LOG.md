@@ -117,3 +117,32 @@ H2 clean-test pretraining gap:
 The pretraining advantage increased monotonically as training data decreased, and the 10% and 100% confidence intervals did not overlap. H2 is therefore supported under the preregistered decision rule.
 
 No runs or seeds were excluded.
+
+## H3 and H4 analysis completed
+
+H3:
+
+- Clean-accuracy gains did not explain corruption robustness gains.
+- BloodMNIST showed a small clean gain (+0.0042) but a large corrupted-set gain (+0.1638).
+- DermaMNIST showed a large clean gain (+0.1728) but a slightly negative corrupted-set gain (-0.0048).
+- PneumoniaMNIST showed a clean gain (+0.0803) but a negative corrupted-set gain (-0.0435).
+- Clean gain vs corrupted gain was negative rather than positive.
+- Clean gain vs BE advantage was also negative.
+- H3 was rejected under the preregistered decision rule.
+
+H4:
+
+- Severity-dependent pretraining gaps were evaluated for 13 dataset × corruption-family cells.
+- Only 2/13 cells (15.4%) showed a strictly monotonic decrease in the pretrained balanced-accuracy advantage as severity increased.
+- The two monotonic cells were DermaMNIST blur and PneumoniaMNIST digital.
+- BloodMNIST generally showed increasing or non-monotonic pretraining benefits with severity.
+- H4 was rejected under the preregistered decision rule.
+
+Final preregistered hypothesis status:
+
+- H1: Rejected
+- H2: Supported
+- H3: Rejected
+- H4: Rejected
+
+No seeds or runs were excluded.
