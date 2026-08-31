@@ -1,0 +1,11 @@
+dataset,condition,seed,clean_test_bacc
+derma,pretrained,0,0.7104744268353997
+derma,pretrained,1,0.7440463834561305
+derma,pretrained,2,0.684106628040369
+derma,pretrained,3,0.759823002459764
+derma,pretrained,4,0.7342786555676982
+derma,scratch,0,0.5642540763608883
+derma,scratch,1,0.5453605518324164
+derma,scratch,2,0.5534051671878045
+derma,scratch,3,0.5595158868406569
+derma,scratch,4,0.5462305203322988

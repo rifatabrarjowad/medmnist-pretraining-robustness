@@ -1,0 +1,11 @@
+dataset,condition,seed,clean_test_bacc
+blood,pretrained,0,0.9899915047646126
+blood,pretrained,1,0.9867345502282887
+blood,pretrained,2,0.9911905785219126
+blood,pretrained,3,0.9910253517357612
+blood,pretrained,4,0.9920144566582405
+blood,scratch,0,0.986881642329062
+blood,scratch,1,0.9886038123934131
+blood,scratch,2,0.9783312861510041
+blood,scratch,3,0.9881007357017895
+blood,scratch,4,0.988147309202292

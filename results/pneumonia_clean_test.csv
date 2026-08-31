@@ -1,0 +1,11 @@
+dataset,condition,seed,clean_test_bacc
+pneumonia,pretrained,0,0.9098290598290598
+pneumonia,pretrained,1,0.8713675213675214
+pneumonia,pretrained,2,0.8833333333333333
+pneumonia,pretrained,3,0.9055555555555556
+pneumonia,pretrained,4,0.8747863247863248
+pneumonia,scratch,0,0.808974358974359
+pneumonia,scratch,1,0.8247863247863247
+pneumonia,scratch,2,0.7790598290598291
+pneumonia,scratch,3,0.8196581196581196
+pneumonia,scratch,4,0.8111111111111111
