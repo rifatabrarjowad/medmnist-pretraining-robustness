@@ -47,9 +47,9 @@ def get_device():
     return torch.device("cpu")
 
 
+
 def get_transform():
     return transforms.Compose([
-        transforms.Grayscale(num_output_channels=3),
         transforms.ToTensor(),
         transforms.Normalize(
             mean=[0.485, 0.456, 0.406],
@@ -58,7 +58,7 @@ def get_transform():
     ])
 
 
-def get_dataloaders(dataset_name):
+def get_dataloaders(dataset_name, fraction=1.0, seed=0):
     dataset_class, _ = DATASETS[dataset_name]
 
     transform = get_transform()
@@ -68,13 +68,38 @@ def get_dataloaders(dataset_name):
         transform=transform,
         download=True,
         size=224,
+        as_rgb=True,
     )
+    if fraction < 1.0:
+        generator = torch.Generator().manual_seed(seed)
+
+        subset_size = int(
+            len(train_dataset) * fraction
+        )
+
+        indices = torch.randperm(
+            len(train_dataset),
+            generator=generator,
+        )[:subset_size]
+
+        train_dataset = torch.utils.data.Subset(
+            train_dataset,
+            indices.tolist(),
+        )
+
+        print(
+            f"Training fraction: {fraction}"
+        )
+        print(
+            f"Training samples: {len(train_dataset)}"
+        )
 
     val_dataset = dataset_class(
         split="val",
         transform=transform,
         download=True,
         size=224,
+        as_rgb=True,
     )
 
     train_loader = DataLoader(
@@ -142,7 +167,12 @@ def evaluate(model, loader, device):
     )
 
 
-def train(dataset_name, condition, seed):
+def train(
+    dataset_name,
+    condition,
+    seed,
+    fraction=1.0,
+):
     set_seed(seed)
 
     device = get_device()
@@ -153,7 +183,9 @@ def train(dataset_name, condition, seed):
     print("Seed:", seed)
 
     train_loader, val_loader = get_dataloaders(
-        dataset_name
+    dataset_name,
+    fraction=fraction,
+    seed=seed,
     )
 
     model = build_model(
@@ -189,10 +221,19 @@ def train(dataset_name, condition, seed):
         exist_ok=True
     )
 
-    checkpoint_path = (
-        f"results/checkpoints/"
-        f"{dataset_name}_{condition}_seed{seed}.pt"
-    )
+    if fraction == 1.0:
+        checkpoint_path = (
+            f"results/checkpoints/"
+            f"{dataset_name}_{condition}_seed{seed}.pt"
+        )
+    else:
+        frac_tag = int(fraction * 100)
+
+        checkpoint_path = (
+            f"results/checkpoints/"
+            f"{dataset_name}_{condition}_"
+            f"frac{frac_tag}_seed{seed}.pt"
+        )
 
     for epoch in range(MAX_EPOCHS):
         model.train()
@@ -287,7 +328,17 @@ def parse_args():
         required=True,
         type=int,
     )
-
+    parser.add_argument(
+    "--fraction",
+    type=float,
+    default=1.0,
+    choices=[
+        1.0,
+        0.5,
+        0.25,
+        0.10,
+    ],
+)
     return parser.parse_args()
 
 
@@ -295,7 +346,8 @@ if __name__ == "__main__":
     args = parse_args()
 
     train(
-        dataset_name=args.dataset,
-        condition=args.condition,
-        seed=args.seed,
-    )
+    dataset_name=args.dataset,
+    condition=args.condition,
+    seed=args.seed,
+    fraction=args.fraction,
+)

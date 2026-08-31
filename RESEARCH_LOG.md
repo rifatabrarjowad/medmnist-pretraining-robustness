@@ -82,3 +82,38 @@ These validation results are training-selection diagnostics only.
 They are not the primary research endpoint.
 
 All best-validation checkpoints were saved locally.
+
+## Core robustness analysis and H2 ablation
+
+Completed all preregistered core training runs:
+
+- 3 datasets × 2 initialization conditions × 5 seeds = 30 runs.
+- BloodMNIST, DermaMNIST, and PneumoniaMNIST were evaluated on clean test sets and MedMNIST-C corruptions.
+
+Core robustness analysis:
+
+- BloodMNIST showed a strong overall corruption advantage for ImageNet-pretrained models, but the effect varied substantially by corruption family.
+- DermaMNIST and PneumoniaMNIST showed mixed effects: pretraining improved several color/intensity and task-specific corruptions, while scratch models performed better on several noise, blur, and digital corruptions.
+- The preregistered H1 direction was reversed. Task-specific corruptions showed larger, not smaller, pretraining benefits relative to pooled noise/blur/digital corruptions.
+- Bootstrap primary interaction:
+  - BloodMNIST: Δ = +1.0009, 95% CI [-0.0094, +2.0111]
+  - DermaMNIST: Δ = +0.5657, 95% CI [+0.4799, +0.6604]
+- Therefore H1 is rejected under the preregistered decision rule.
+
+Completed H2 training-fraction ablation:
+
+- BloodMNIST fractions: 100%, 50%, 25%, 10%.
+- Pretrained vs scratch, seeds 0–2.
+- Total ablation runs: 18.
+- Total preregistered training runs completed: 48.
+
+H2 clean-test pretraining gap:
+
+- 100%: +0.0047, 95% CI [-0.0019, +0.0129]
+- 50%: +0.0079, 95% CI [+0.0069, +0.0096]
+- 25%: +0.0103, 95% CI [+0.0090, +0.0117]
+- 10%: +0.0372, 95% CI [+0.0236, +0.0609]
+
+The pretraining advantage increased monotonically as training data decreased, and the 10% and 100% confidence intervals did not overlap. H2 is therefore supported under the preregistered decision rule.
+
+No runs or seeds were excluded.
