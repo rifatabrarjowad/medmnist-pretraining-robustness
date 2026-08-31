@@ -84,7 +84,7 @@ The study was preregistered before the core experiments. The primary endpoint wa
 
 ### Datasets
 
-We evaluated three datasets from the MedMNIST+ collection at 224 × 224 resolution:
+We evaluated three datasets from the MedMNIST+ collection at 224 × 224 resolution [4]:
 
 - BloodMNIST: eight-class blood-cell microscopy classification, with 11,959 training, 1,712 validation, and 3,421 test examples.
 - DermaMNIST: seven-class dermatoscopic lesion classification, with 7,007 training, 1,003 validation, and 2,005 test examples.
@@ -92,7 +92,7 @@ We evaluated three datasets from the MedMNIST+ collection at 224 × 224 resoluti
 
 Official predefined train, validation, and test splits were used without re-splitting.
 
-Corrupted evaluation sets were obtained from MedMNIST-C. BloodMNIST-C contained 11 corruption types, DermaMNIST-C contained 15, and PneumoniaMNIST-C contained 13. Each corruption was evaluated at five severity levels.
+Corrupted evaluation sets were obtained from MedMNIST-C [5]. BloodMNIST-C contained 11 corruption types, DermaMNIST-C contained 15, and PneumoniaMNIST-C contained 13. Each corruption was evaluated at five severity levels.
 
 BloodMNIST-C included the task-specific corruptions `stain_deposit` and `bubble`. DermaMNIST-C included `black_corner` and `characters`. PneumoniaMNIST-C contained no task-specific corruption family and was included as a contrast dataset.
 
@@ -157,7 +157,7 @@ For each fraction, pretrained and scratch models were trained using seeds 0, 1, 
 
 The 100% setting used the corresponding core experiment models for seeds 0–2.
 
-The reduced training subsets were sampled deterministically using the experiment seed. Validation and test sets were unchanged.
+The reduced training subsets were sampled deterministically using a seed-specific random permutation without class stratification. For a given seed, the 10%, 25%, and 50% subsets were nested prefixes of the same permutation. Validation and test sets were unchanged.
 
 The ablation therefore contributed:
 
@@ -294,7 +294,7 @@ On DermaMNIST, the pattern was similarly heterogeneous. Task-specific corruption
 
 PneumoniaMNIST contained no task-specific corruptions. Color corruptions favored pretraining (+9.58 percentage points), whereas noise (-21.01 points), digital (-10.69 points), and blur (-8.57 points) favored scratch training.
 
-The preregistered H1 predicted that the benefit of ImageNet initialization would be smaller for task-specific corruptions than for pooled noise, blur, and digital corruptions. The observed direction was reversed. The task-specific versus pooled interaction was +1.0009 ΔBE on BloodMNIST and +0.5657 on DermaMNIST. The bootstrap 95% confidence interval for the interaction included zero on BloodMNIST [-0.0094, 2.0111] but excluded zero on DermaMNIST [0.4799, 0.6604]. Therefore, H1 was rejected.
+The preregistered H1 predicted that the benefit of ImageNet initialization would be smaller for task-specific corruptions than for pooled noise, blur, and digital corruptions. The observed direction was reversed on both datasets. The task-specific-versus-pooled interaction was +1.0009 ΔBE on BloodMNIST and +0.5657 ΔBE on DermaMNIST. Descriptive bootstrap 95% confidence intervals were [-0.0094, 2.0111] for BloodMNIST and [0.4799, 0.6604] for DermaMNIST. Because the observed interaction was opposite to the preregistered directional prediction, H1 was rejected. The bootstrap intervals are reported as uncertainty estimates and should not be interpreted as Holm-corrected confirmatory interaction tests.
 
 ### Training-set size ablation
 
@@ -310,7 +310,7 @@ The relationship between clean accuracy gain and corruption robustness gain did 
 
 On BloodMNIST, the mean clean balanced-accuracy gain from pretraining was only +0.42 percentage points, whereas the mean corrupted-set gain was +16.38 points. On DermaMNIST, the clean gain was +17.28 points, but the corrupted-set gain was -0.48 points. On PneumoniaMNIST, the clean gain was +8.03 points, while the corrupted-set gain was -4.35 points.
 
-Across the 15 dataset-seed pairs, clean-accuracy gain was negatively associated with corrupted-accuracy gain (Pearson r = -0.63; Spearman ρ = -0.46). Clean gain was also negatively associated with BE advantage (Pearson r = -0.79; Spearman ρ = -0.63).
+Across the 15 dataset-seed pairs, clean-accuracy gain was negatively associated with corrupted-accuracy gain (Pearson r = -0.63; Spearman ρ = -0.46). Clean gain was also negatively associated with BE advantage (Pearson r = -0.79; Spearman ρ = -0.63). Because these 15 observations contain repeated seeds within only three datasets, these correlations are treated as descriptive rather than as independent-sample confirmatory tests.
 
 Thus, the corrupted-set advantage of ImageNet initialization was not explained by the corresponding clean-set advantage. H3 was rejected.
 
@@ -323,7 +323,7 @@ This pattern was uncommon. Only 2 of 13 dataset × corruption-family cells (15.4
 At the dataset level, BloodMNIST showed the opposite tendency: the overall pretraining advantage increased from +4.44 percentage points at severity 1 to +19.93 points at severity 5, with the largest gap occurring at severity 3. DermaMNIST shifted from a small pretrained advantage at severity 1 (+1.79 points) to a scratch advantage at severity 5 (-2.84 points). PneumoniaMNIST also increasingly favored scratch training as severity increased, from -0.33 points at severity 1 to -7.76 points at severity 5.
 
 Because monotonic decreases occurred in only a small minority of dataset × family cells, H4 was rejected.
-Paired-seed bootstrap confidence intervals showed that many family-specific effects were clearly separated from zero at several severity levels, but the direction and magnitude of the effect varied substantially across families. The addition of uncertainty estimates did not change the preregistered H4 conclusion.
+Paired-seed bootstrap confidence intervals excluded zero for several family-by-severity effects, although the direction and magnitude varied substantially across families. These uncertainty estimates did not alter the preregistered H4 conclusion.
 
 ### Summary of hypothesis tests
 
