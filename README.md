@@ -54,7 +54,7 @@ Overall, the effect of ImageNet initialization depends strongly on dataset, corr
 ├── results/            # clean, corruption, and statistical result tables
 ├── src/                # training, evaluation, analysis, and plotting code
 └── README.md
-
+```
 
 ## Manuscript
 
@@ -80,4 +80,7 @@ A formal citation will be added after the preprint receives an arXiv or DOI iden
 ## License
 
 Code and manuscript licensing information will be added before archival release.
+
+```
+
 ```
