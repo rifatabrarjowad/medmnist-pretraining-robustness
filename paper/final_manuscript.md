@@ -1,5 +1,12 @@
 # Inherited or Learned? Decomposing the Contribution of ImageNet Pretraining to Corruption Robustness in Medical Image Classification
 
+**Rifat Abrar Jowad**  
+St. Edward’s University, Austin, Texas, USA  
+Email: rajdiprifat2004@gmail.com  
+GitHub: rifatabrarjowad  
+Repository: https://github.com/rifatabrarjowad/medmnist-pretraining-robustness
+
+
 ## Abstract
 
 ImageNet pretraining is widely used in medical image classification, but it remains unclear whether robustness to image corruption is inherited from pretraining or learned primarily from the target medical dataset. We study this question using a controlled comparison between ImageNet-pretrained and randomly initialized ResNet-18 models on BloodMNIST, DermaMNIST, and PneumoniaMNIST, evaluated with MedMNIST-C. Architecture, preprocessing, optimization, model selection, and evaluation procedures were held fixed across initialization conditions.
@@ -270,7 +277,7 @@ Experiments were implemented in Python using PyTorch, torchvision, MedMNIST, Med
 
 Training and evaluation were executed using the PyTorch MPS backend on Apple Silicon when available.
 
-All experiment scripts, analysis code, configuration decisions, and result tables are maintained in the accompanying public repository for reproducibility.
+All experiment scripts, analysis code, configuration decisions, and result tables are maintained in the accompanying public repository for reproducibility: https://github.com/rifatabrarjowad/medmnist-pretraining-robustness.
 
 ## Results
 
