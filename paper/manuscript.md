@@ -6,7 +6,7 @@ ImageNet pretraining is widely used in medical image classification, but it rema
 
 Across 30 core training runs and 18 training-set-size ablation runs, we evaluated clean balanced accuracy, corrupted balanced accuracy, balanced error, relative balanced error, corruption-family effects, and severity dependence. ImageNet initialization produced strongly heterogeneous robustness effects. On BloodMNIST, pretrained models achieved substantially higher mean corrupted balanced accuracy than scratch models (89.01% vs. 72.64%), whereas on DermaMNIST the two conditions were nearly equal (40.37% vs. 40.86%), and on PneumoniaMNIST scratch models performed better under corruption (76.54% vs. 72.19%).
 
-Contrary to the preregistered H1 prediction, the task-specific-versus-generic interaction was reversed in direction on both BloodMNIST and DermaMNIST; the bootstrap interval excluded zero on DermaMNIST but narrowly included zero on BloodMNIST. Clean-set gains also did not provide a dataset-independent account of robustness gains: the preregistered pooled H3 analysis was negative, but post-hoc dataset-centered analyses showed that this pattern was strongly influenced by between-dataset differences. In the BloodMNIST data-size ablation, the clean pretraining advantage increased from +0.47 percentage points at 100% of the training data to +3.72 points at 10%. Under corruption, the corresponding advantage increased from +16.58 points at 100% to +23.40 points at 10%, although intermediate fractions were not strictly monotonic. Pretraining advantage also failed to decrease consistently with corruption severity, with only 2 of 14 dataset-by-family cells exhibiting the preregistered monotonic trend.
+Contrary to the preregistered H1 prediction, the task-specific-versus-generic interaction was reversed in direction on both BloodMNIST and DermaMNIST; the bootstrap interval excluded zero on DermaMNIST but narrowly included zero on BloodMNIST. Clean-set gains also did not provide a dataset-independent account of robustness gains: the preregistered pooled H3 analysis was negative, but post-hoc dataset-centered analyses showed that this pattern was strongly influenced by between-dataset differences. In the BloodMNIST data-size ablation, the clean pretraining advantage increased from +0.47 percentage points at 100% of the training data to +3.72 points at 10%. In a post-hoc corruption extension, the corresponding advantage increased from +16.58 points at 100% to +23.40 points at 10%, although intermediate fractions were not strictly monotonic. Pretraining advantage also failed to decrease consistently with corruption severity, with only 2 of 14 dataset-by-family cells exhibiting the preregistered monotonic trend.
 
 These results show that ImageNet initialization does not confer uniform corruption robustness in medical image classification. Its effect depends strongly on dataset, corruption family, training-data availability, and corruption severity. Clean accuracy and pretraining status alone are therefore insufficient indicators of robustness under distribution shift.
 
@@ -39,7 +39,7 @@ These results suggest that medical image robustness should not be inferred from 
 
 ### Corruption robustness benchmarks
 
-Controlled corruption benchmarks provide a standardized framework for measuring performance under non-adversarial image degradation. Hendrycks and Dietterich introduced ImageNet-C and related benchmarks to evaluate classifiers under common corruptions and perturbations rather than worst-case adversarial attacks. ImageNet-C applies multiple corruption types at several severity levels and has become a common reference for evaluating distribution-shift robustness.
+Controlled corruption benchmarks provide a standardized framework for measuring performance under non-adversarial image degradation. Hendrycks and Dietterich introduced ImageNet-C and related benchmarks to evaluate classifiers under common corruptions and perturbations rather than worst-case adversarial attacks [1]. ImageNet-C applies multiple corruption types at several severity levels and has become a common reference for evaluating distribution-shift robustness.
 
 The same general framework has increasingly been applied to medical imaging, where acquisition artifacts and modality-specific shifts can differ substantially from those encountered in natural images [5,9].
 
@@ -388,7 +388,7 @@ Thus, improved clean performance from ImageNet initialization did not consistent
 
 The effect of ImageNet initialization varied strongly across corruption families.
 
-On BloodMNIST, color corruptions showed the largest mean pretraining advantage, with a pretrained-minus-scratch balanced-accuracy difference of +30.74 percentage points and a mean ΔBE of +5.53. Task-specific corruptions also favored pretrained models (+14.04 points; ΔBE = +0.77), as did blur corruptions (+6.46 points; ΔBE = +0.32). Digital corruptions instead favored scratch training (-7.27 points; ΔBE = -0.78).
+On BloodMNIST, color corruptions showed the largest mean pretraining advantage, with a pretrained-minus-scratch balanced-accuracy difference of +30.74 percentage points and a mean ΔBE of +5.53. In a post-hoc descriptive check, all five BloodMNIST color corruptions favored pretraining in ΔBE (range +1.29 to +12.65; median +4.33); after excluding the largest value from saturate, the remaining four-corruption mean was +3.75, indicating that the family-level pattern was not driven solely by a single corruption. Task-specific corruptions also favored pretrained models (+14.04 points; ΔBE = +0.77), as did blur corruptions (+6.46 points; ΔBE = +0.32). Digital corruptions instead favored scratch training (-7.27 points; ΔBE = -0.78).
 
 On DermaMNIST, task-specific corruptions showed the largest mean pretraining benefit (+21.17 percentage points; ΔBE = +0.36), followed by color corruptions (+16.29 points; ΔBE = +0.33). In contrast, blur (-18.22 points; ΔBE = -0.29), digital (-14.85 points; ΔBE = -0.31), and noise (-7.60 points; ΔBE = -0.10) favored scratch-trained models.
 
@@ -398,7 +398,9 @@ The preregistered H1 analysis was defined for BloodMNIST and DermaMNIST and pred
 
 Because the observed interaction was opposite to the preregistered directional prediction, H1 was rejected.
 
-At the dataset level, two-sided Wilcoxon signed-rank tests on per-corruption ΔBE values yielded W = 9, p = 0.032 for BloodMNIST; W = 57, p = 0.890 for DermaMNIST; and W = 38, p = 0.635 for PneumoniaMNIST. Family-level Wilcoxon tests were additionally adjusted within dataset using the Holm-Bonferroni procedure; none of the family-level comparisons remained significant after correction. The corresponding PneumoniaMNIST task-specific results are reported descriptively and were not part of the preregistered H1 contrast.
+The corresponding PneumoniaMNIST task-specific results are reported descriptively and were not part of the preregistered H1 contrast.
+
+Separately from the preregistered H1 interaction analysis, dataset-level two-sided Wilcoxon signed-rank tests on per-corruption ΔBE values yielded W = 9, p = 0.032 for BloodMNIST; W = 57, p = 0.890 for DermaMNIST; and W = 38, p = 0.635 for PneumoniaMNIST. Thus, the per-corruption ΔBE distribution provided evidence of an overall positive pretraining effect on BloodMNIST, but not on DermaMNIST or PneumoniaMNIST at the nominal 0.05 level. Family-level Wilcoxon tests were additionally adjusted within dataset using the Holm-Bonferroni procedure; none remained significant after correction. Because individual families contained only 1–5 corruption types, these family-level tests had very limited inferential power, and the absence of statistical significance should not be interpreted as evidence of no family-level effect.
 
 ![Corruption-family dependence of ImageNet pretraining.](../figures/figure1_family_effects.png)
 
@@ -433,7 +435,7 @@ A paired seed-wise comparison of the 10% and 100% conditions showed that reducin
 
 Taken together, these results support H2: the advantage of ImageNet initialization was larger in the most data-limited BloodMNIST regime, both on clean data and under corruption.
 
-![Effect of BloodMNIST training-set size on the benefit of ImageNet initialization. The clean balanced-accuracy gap corresponds to the preregistered H2 analysis, whereas the corrupted balanced-accuracy gap is a post-hoc extension. Error bars show bootstrap 95% confidence intervals over paired seed-level differences.](../figures/h2_training_fraction.png)
+![Effect of BloodMNIST training-set size on the benefit of ImageNet initialization. The clean balanced-accuracy gap corresponds to the preregistered H2 analysis, whereas the corrupted balanced-accuracy gap is a post-hoc extension. Error bars show bootstrap 95% confidence intervals over paired seed-level differences.](../figures/h2_training_fraction.png){ width=72% }
 
 ### Clean accuracy versus corruption robustness
 
@@ -449,7 +451,7 @@ Within-dataset correlations were heterogeneous and were based on only five paire
 
 The preregistered pooled analysis did not support the expectation that gains under corruption were largely explained by clean-set gains, and H3 was rejected according to the preregistered analysis. However, the post-hoc decomposition indicates that the negative pooled association should not be interpreted as evidence that larger clean gains intrinsically reduce corruption robustness.
 
-![Clean balanced-accuracy gain versus corrupted balanced-accuracy gain across paired dataset-seed comparisons.](../figures/h3_clean_vs_corrupted.png)
+![Clean balanced-accuracy gain versus corrupted balanced-accuracy gain across paired dataset-seed comparisons.](../figures/h3_clean_vs_corrupted.png){ width=72% }
 
 ### Sensitivity to clean-performance and chance-level differences
 
@@ -592,9 +594,13 @@ Fifth, the H3 correlation analyses were based on repeated seeds from only three 
 
 Sixth, condition-specific learning rates were used in the core experiments. The original scratch learning-rate search was not symmetric across initialization conditions and used a preprocessing/training-search setup that did not exactly match the final core pipeline. To assess whether this asymmetry materially favored one condition, we performed a post-hoc symmetric learning-rate sensitivity check using the final BloodMNIST preprocessing and training protocol for both pretrained and scratch models over the same grid of 1×10^-4, 3×10^-4, and 1×10^-3. The validation-optimal rates matched those used in the core experiments: 1×10^-4 for pretrained models and 3×10^-4 for scratch models. This result reduces concern that the reported effects arose from arbitrary learning-rate choices, but it does not convert the original asymmetric tuning procedure into a preregistered symmetric comparison.
 
-Seventh, corruption benchmarks provide controlled distribution shifts but cannot reproduce the full complexity of real clinical deployment shifts.
+Seventh, no stochastic data augmentation was used during training. Standard augmentation could affect pretrained and scratch models differently, so future work should test whether the observed initialization effects persist under commonly used augmentation policies.
 
-Eighth, some MedMNIST-C rBE denominators are small or negative. We handled these cases using the preregistered exclusion and flagging rules and treated BE as the primary normalized metric, but this illustrates a limitation of relative normalized metrics.
+Eighth, training used a common maximum budget of 50 epochs with validation-based early stopping. Because optimization dynamics can differ between pretrained and randomly initialized models, future work should test whether longer training budgets materially alter the observed initialization effects.
+
+Ninth, corruption benchmarks provide controlled distribution shifts but cannot reproduce the full complexity of real clinical deployment shifts.
+
+Tenth, some MedMNIST-C rBE denominators are small or negative. We handled these cases using the preregistered exclusion and flagging rules and treated BE as the primary normalized metric, but this illustrates a limitation of relative normalized metrics.
 
 
 ### Conclusion

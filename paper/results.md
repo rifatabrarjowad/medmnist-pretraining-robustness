@@ -14,7 +14,7 @@ Thus, improved clean performance from ImageNet initialization did not consistent
 
 The effect of ImageNet initialization varied strongly across corruption families.
 
-On BloodMNIST, color corruptions showed the largest mean pretraining advantage, with a pretrained-minus-scratch balanced-accuracy difference of +30.74 percentage points and a mean ΔBE of +5.53. Task-specific corruptions also favored pretrained models (+14.04 points; ΔBE = +0.77), as did blur corruptions (+6.46 points; ΔBE = +0.32). Digital corruptions instead favored scratch training (-7.27 points; ΔBE = -0.78).
+On BloodMNIST, color corruptions showed the largest mean pretraining advantage, with a pretrained-minus-scratch balanced-accuracy difference of +30.74 percentage points and a mean ΔBE of +5.53. In a post-hoc descriptive check, all five BloodMNIST color corruptions favored pretraining in ΔBE (range +1.29 to +12.65; median +4.33); after excluding the largest value from saturate, the remaining four-corruption mean was +3.75, indicating that the family-level pattern was not driven solely by a single corruption. Task-specific corruptions also favored pretrained models (+14.04 points; ΔBE = +0.77), as did blur corruptions (+6.46 points; ΔBE = +0.32). Digital corruptions instead favored scratch training (-7.27 points; ΔBE = -0.78).
 
 On DermaMNIST, task-specific corruptions showed the largest mean pretraining benefit (+21.17 percentage points; ΔBE = +0.36), followed by color corruptions (+16.29 points; ΔBE = +0.33). In contrast, blur (-18.22 points; ΔBE = -0.29), digital (-14.85 points; ΔBE = -0.31), and noise (-7.60 points; ΔBE = -0.10) favored scratch-trained models.
 
@@ -24,7 +24,9 @@ The preregistered H1 analysis was defined for BloodMNIST and DermaMNIST and pred
 
 Because the observed interaction was opposite to the preregistered directional prediction, H1 was rejected.
 
-At the dataset level, two-sided Wilcoxon signed-rank tests on per-corruption ΔBE values yielded W = 9, p = 0.032 for BloodMNIST; W = 57, p = 0.890 for DermaMNIST; and W = 38, p = 0.635 for PneumoniaMNIST. Family-level Wilcoxon tests were additionally adjusted within dataset using the Holm-Bonferroni procedure; none of the family-level comparisons remained significant after correction. The corresponding PneumoniaMNIST task-specific results are reported descriptively and were not part of the preregistered H1 contrast.
+The corresponding PneumoniaMNIST task-specific results are reported descriptively and were not part of the preregistered H1 contrast.
+
+Separately from the preregistered H1 interaction analysis, dataset-level two-sided Wilcoxon signed-rank tests on per-corruption ΔBE values yielded W = 9, p = 0.032 for BloodMNIST; W = 57, p = 0.890 for DermaMNIST; and W = 38, p = 0.635 for PneumoniaMNIST. Thus, the per-corruption ΔBE distribution provided evidence of an overall positive pretraining effect on BloodMNIST, but not on DermaMNIST or PneumoniaMNIST at the nominal 0.05 level. Family-level Wilcoxon tests were additionally adjusted within dataset using the Holm-Bonferroni procedure; none remained significant after correction. Because individual families contained only 1–5 corruption types, these family-level tests had very limited inferential power, and the absence of statistical significance should not be interpreted as evidence of no family-level effect.
 
 ## Training-set size ablation
 

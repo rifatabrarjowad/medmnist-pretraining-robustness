@@ -92,9 +92,13 @@ Fifth, the H3 correlation analyses were based on repeated seeds from only three 
 
 Sixth, condition-specific learning rates were used in the core experiments. The original scratch learning-rate search was not symmetric across initialization conditions and used a preprocessing/training-search setup that did not exactly match the final core pipeline. To assess whether this asymmetry materially favored one condition, we performed a post-hoc symmetric learning-rate sensitivity check using the final BloodMNIST preprocessing and training protocol for both pretrained and scratch models over the same grid of 1×10^-4, 3×10^-4, and 1×10^-3. The validation-optimal rates matched those used in the core experiments: 1×10^-4 for pretrained models and 3×10^-4 for scratch models. This result reduces concern that the reported effects arose from arbitrary learning-rate choices, but it does not convert the original asymmetric tuning procedure into a preregistered symmetric comparison.
 
-Seventh, corruption benchmarks provide controlled distribution shifts but cannot reproduce the full complexity of real clinical deployment shifts.
+Seventh, no stochastic data augmentation was used during training. Standard augmentation could affect pretrained and scratch models differently, so future work should test whether the observed initialization effects persist under commonly used augmentation policies.
 
-Eighth, some MedMNIST-C rBE denominators are small or negative. We handled these cases using the preregistered exclusion and flagging rules and treated BE as the primary normalized metric, but this illustrates a limitation of relative normalized metrics.
+Eighth, training used a common maximum budget of 50 epochs with validation-based early stopping. Because optimization dynamics can differ between pretrained and randomly initialized models, future work should test whether longer training budgets materially alter the observed initialization effects.
+
+Ninth, corruption benchmarks provide controlled distribution shifts but cannot reproduce the full complexity of real clinical deployment shifts.
+
+Tenth, some MedMNIST-C rBE denominators are small or negative. We handled these cases using the preregistered exclusion and flagging rules and treated BE as the primary normalized metric, but this illustrates a limitation of relative normalized metrics.
 
 
 ## Conclusion
