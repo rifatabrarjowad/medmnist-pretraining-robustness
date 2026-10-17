@@ -356,7 +356,203 @@ print(
     f"(p={spearman_be_p:.6f})"
 )
 
+# ============================================================
+# 7B. WITHIN-DATASET DESCRIPTIVE ASSOCIATIONS
+#
+# The pooled 15-point correlation can be driven by
+# between-dataset differences. We therefore also inspect
+# associations separately within each dataset and after
+# centering each variable by its dataset mean.
+#
+# With only 5 paired seeds per dataset, these are descriptive
+# effect-size diagnostics rather than confirmatory tests.
+# ============================================================
 
+print("\n========================================")
+print("WITHIN-DATASET H3 ASSOCIATIONS")
+print("descriptive only; n=5 seeds per dataset")
+print("========================================")
+
+within_rows = []
+
+for dataset in [
+    "blood",
+    "derma",
+    "pneumonia",
+]:
+
+    temp = paired[
+        paired["dataset"] == dataset
+    ].copy()
+
+    clean_values = temp["clean_gain"].to_numpy()
+    corrupted_values = temp["corrupted_gain"].to_numpy()
+    be_values = temp["BE_advantage"].to_numpy()
+
+    r_corr, _ = pearsonr(
+        clean_values,
+        corrupted_values,
+    )
+
+    rho_corr, _ = spearmanr(
+        clean_values,
+        corrupted_values,
+    )
+
+    r_be, _ = pearsonr(
+        clean_values,
+        be_values,
+    )
+
+    rho_be, _ = spearmanr(
+        clean_values,
+        be_values,
+    )
+
+    within_rows.append({
+        "dataset": dataset,
+        "n": len(temp),
+        "pearson_clean_vs_corrupted":
+            r_corr,
+        "spearman_clean_vs_corrupted":
+            rho_corr,
+        "pearson_clean_vs_BE":
+            r_be,
+        "spearman_clean_vs_BE":
+            rho_be,
+    })
+
+    print(f"\n{dataset.upper()}")
+
+    print(
+        f"clean vs corrupted gain: "
+        f"Pearson r={r_corr:+.4f}, "
+        f"Spearman rho={rho_corr:+.4f}"
+    )
+
+    print(
+        f"clean vs BE advantage:   "
+        f"Pearson r={r_be:+.4f}, "
+        f"Spearman rho={rho_be:+.4f}"
+    )
+
+
+within_df = pd.DataFrame(
+    within_rows
+)
+
+within_df.to_csv(
+    "results/h3_within_dataset_correlations.csv",
+    index=False,
+)
+
+
+# ============================================================
+# 7C. DATASET-CENTERED POOLED ASSOCIATION
+#
+# Remove each dataset's mean before correlation. This removes
+# the between-dataset component and asks whether seeds with
+# above-average clean gain within their own dataset also show
+# above-average robustness gain within that dataset.
+# ============================================================
+
+centered = paired.copy()
+
+for metric in [
+    "clean_gain",
+    "corrupted_gain",
+    "BE_advantage",
+]:
+    centered[
+        f"{metric}_centered"
+    ] = (
+        centered[metric]
+        -
+        centered.groupby(
+            "dataset"
+        )[metric].transform("mean")
+    )
+
+
+x_centered = (
+    centered[
+        "clean_gain_centered"
+    ].to_numpy()
+)
+
+y_corr_centered = (
+    centered[
+        "corrupted_gain_centered"
+    ].to_numpy()
+)
+
+y_be_centered = (
+    centered[
+        "BE_advantage_centered"
+    ].to_numpy()
+)
+
+
+centered_pearson_corr, _ = pearsonr(
+    x_centered,
+    y_corr_centered,
+)
+
+centered_spearman_corr, _ = spearmanr(
+    x_centered,
+    y_corr_centered,
+)
+
+centered_pearson_be, _ = pearsonr(
+    x_centered,
+    y_be_centered,
+)
+
+centered_spearman_be, _ = spearmanr(
+    x_centered,
+    y_be_centered,
+)
+
+
+print("\n========================================")
+print("DATASET-CENTERED H3 ASSOCIATION")
+print("descriptive only")
+print("========================================")
+
+print(
+    "clean gain vs corrupted gain: "
+    f"Pearson r={centered_pearson_corr:+.4f}, "
+    f"Spearman rho={centered_spearman_corr:+.4f}"
+)
+
+print(
+    "clean gain vs BE advantage:   "
+    f"Pearson r={centered_pearson_be:+.4f}, "
+    f"Spearman rho={centered_spearman_be:+.4f}"
+)
+
+
+pd.DataFrame([
+    {
+        "comparison":
+            "clean_vs_corrupted_gain",
+        "pearson_r":
+            centered_pearson_corr,
+        "spearman_rho":
+            centered_spearman_corr,
+    },
+    {
+        "comparison":
+            "clean_vs_BE_advantage",
+        "pearson_r":
+            centered_pearson_be,
+        "spearman_rho":
+            centered_spearman_be,
+    },
+]).to_csv(
+    "results/h3_dataset_centered_correlations.csv",
+    index=False,
+)
 # ============================================================
 # 8. DATASET-LEVEL DECOMPOSITION
 # ============================================================

@@ -74,36 +74,59 @@ for dataset in datasets:
 # FIGURE 2 — H2 TRAINING FRACTION
 # ============================================================
 
-h2 = pd.read_csv(
+h2_clean = pd.read_csv(
     "results/blood_ablation_gap_ci.csv"
+).sort_values("fraction")
+
+h2_corr = pd.read_csv(
+    "results/blood_ablation_corruption_gap_ci.csv"
+).sort_values("fraction")
+
+
+def gap_ci_arrays(df):
+    x = df["fraction"] * 100
+    y = df["mean_gap"] * 100
+
+    lower = (
+        df["mean_gap"]
+        - df["ci_low"]
+    ) * 100
+
+    upper = (
+        df["ci_high"]
+        - df["mean_gap"]
+    ) * 100
+
+    return x, y, lower, upper
+
+
+x_clean, y_clean, lower_clean, upper_clean = gap_ci_arrays(
+    h2_clean
 )
 
-h2 = h2.sort_values(
-    "fraction"
+x_corr, y_corr, lower_corr, upper_corr = gap_ci_arrays(
+    h2_corr
 )
-
-x = h2["fraction"] * 100
-y = h2["mean_gap"] * 100
-
-lower = (
-    h2["mean_gap"]
-    - h2["ci_low"]
-) * 100
-
-upper = (
-    h2["ci_high"]
-    - h2["mean_gap"]
-) * 100
 
 
 plt.figure(figsize=(7, 5))
 
 plt.errorbar(
-    x,
-    y,
-    yerr=[lower, upper],
+    x_clean,
+    y_clean,
+    yerr=[lower_clean, upper_clean],
     marker="o",
     capsize=5,
+    label="Clean bACC gap (preregistered)",
+)
+
+plt.errorbar(
+    x_corr,
+    y_corr,
+    yerr=[lower_corr, upper_corr],
+    marker="s",
+    capsize=5,
+    label="Corrupted bACC gap (post-hoc)",
 )
 
 plt.axhline(
@@ -126,6 +149,8 @@ plt.title(
 plt.xticks(
     [10, 25, 50, 100]
 )
+
+plt.legend()
 
 plt.tight_layout()
 
@@ -264,6 +289,15 @@ h4_ci = pd.read_csv(
 
 datasets = ["blood", "derma", "pneumonia"]
 
+FAMILY_COLORS = {
+    "blur": "C0",
+    "color": "C1",
+    "digital": "C2",
+    "noise": "C3",
+    "task": "C4",
+    "task_specific": "C4",
+}
+
 fig, axes = plt.subplots(
     1,
     3,
@@ -306,7 +340,12 @@ for ax, dataset in zip(axes, datasets):
             yerr=[lower, upper],
             marker="o",
             capsize=3,
-            label=family,
+            color=FAMILY_COLORS[family],
+            label=(
+                "task-specific"
+                if family in {"task", "task_specific"}
+                else family
+            ),
         )
 
     ax.axhline(
@@ -329,13 +368,22 @@ for ax, dataset in zip(axes, datasets):
 axes[0].set_ylabel(
     "Pretrained − Scratch bACC (pp)"
 )
+# Build one shared legend across all panels.
+handles_by_label = {}
 
-axes[-1].legend(
+for ax in axes:
+    handles, labels = ax.get_legend_handles_labels()
+
+    for handle, label in zip(handles, labels):
+        handles_by_label[label] = handle
+
+fig.legend(
+    handles_by_label.values(),
+    handles_by_label.keys(),
     title="Family",
-    bbox_to_anchor=(1.02, 1),
-    loc="upper left",
+    bbox_to_anchor=(1.01, 0.5),
+    loc="center left",
 )
-
 fig.suptitle(
     "Effect of corruption severity on the pretraining advantage"
 )

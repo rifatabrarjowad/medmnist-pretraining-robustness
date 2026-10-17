@@ -41,14 +41,14 @@ FAMILY_MAP = {
     "contrast_down": "color",
     "contrast_up": "color",
     "saturate": "color",
-    "gamma_corr_down": "color",
-    "gamma_corr_up": "color",
 
     # Task-specific
     "stain_deposit": "task",
     "bubble": "task",
     "black_corner": "task",
     "characters": "task",
+    "gamma_corr_down": "task",
+    "gamma_corr_up": "task",
 }
 
 
