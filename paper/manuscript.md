@@ -1,5 +1,10 @@
 # Inherited or Learned? Decomposing the Contribution of ImageNet Pretraining to Corruption Robustness in Medical Image Classification
 
+**Rifat Abrar Jowad**  
+Independent Researcher, Austin, Texas, USA  
+Email: rajdiprifat2004@gmail.com  
+Repository: <https://github.com/rifatabrarjowad/medmnist-pretraining-robustness>
+
 ## Abstract
 
 ImageNet pretraining is widely used in medical image classification, but it remains unclear whether robustness to image corruption is inherited from pretraining or learned primarily from the target medical dataset. We investigated this question using a controlled comparison between ImageNet-pretrained and randomly initialized ResNet-18 models on BloodMNIST, DermaMNIST, and PneumoniaMNIST evaluated with MedMNIST-C. Architecture, preprocessing, optimizer family, learning-rate schedule, model selection, and evaluation procedures were matched across initialization conditions, while condition-specific learning rates were used.
@@ -359,7 +364,7 @@ Experiments were implemented in Python using PyTorch, torchvision, MedMNIST, Med
 
 Training and evaluation were executed using the PyTorch MPS backend on Apple Silicon when available.
 
-All experiment scripts, analysis code, configuration decisions, and result tables are maintained in the accompanying repository for reproducibility.
+All experiment scripts, analysis code, configuration decisions, and result tables are maintained in the public repository for reproducibility: <https://github.com/rifatabrarjowad/medmnist-pretraining-robustness>.
 
 ## Results
 
@@ -400,9 +405,7 @@ Because the observed interaction was opposite to the preregistered directional p
 
 The corresponding PneumoniaMNIST task-specific results are reported descriptively and were not part of the preregistered H1 contrast.
 
-Separately from the preregistered H1 interaction analysis, dataset-level two-sided Wilcoxon signed-rank tests on per-corruption ΔBE values yielded W = 9, p = 0.032 for BloodMNIST; W = 57, p = 0.890 for DermaMNIST; and W = 38, p = 0.635 for PneumoniaMNIST. Thus, the per-corruption ΔBE distribution provided evidence of an overall positive pretraining effect on BloodMNIST, but not on DermaMNIST or PneumoniaMNIST at the nominal 0.05 level. Family-level Wilcoxon tests were additionally adjusted within dataset using the Holm-Bonferroni procedure; none remained significant after correction. Because individual families contained only 1–5 corruption types, these family-level tests had very limited inferential power, and the absence of statistical significance should not be interpreted as evidence of no family-level effect.
-
-![Corruption-family dependence of ImageNet pretraining.](../figures/figure1_family_effects.png)
+Separately from the preregistered H1 interaction analysis, dataset-level two-sided Wilcoxon signed-rank tests on per-corruption ΔBE values yielded W = 9, p = 0.032 for BloodMNIST; W = 57, p = 0.890 for DermaMNIST; and W = 38, p = 0.635 for PneumoniaMNIST. Thus, the per-corruption ΔBE distribution provided evidence of an overall positive pretraining effect on BloodMNIST, but not on DermaMNIST or PneumoniaMNIST at the nominal 0.05 level. Family-level Wilcoxon tests were additionally adjusted within dataset using the Holm-Bonferroni procedure; none of the computable family-level tests remained significant after correction. Because individual families contained only 1–5 corruption types, these family-level tests had very limited inferential power, and the absence of statistical significance should not be interpreted as evidence of no family-level effect.
 
 **Table 2. Corruption-family effects of ImageNet initialization.**
 
@@ -422,6 +425,8 @@ Separately from the preregistered H1 interaction analysis, dataset-level two-sid
 | Pneumonia | Digital | 2 | -10.69 | -0.41 |
 | Pneumonia | Noise | 4 | -21.01 | -0.50 |
 | Pneumonia | Task-specific | 2 | +8.79 | +0.72 |
+
+![Corruption-family dependence of ImageNet pretraining.](../figures/figure1_family_effects.png){ width=72% }
 
 ### Training-set size ablation
 
