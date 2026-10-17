@@ -306,7 +306,11 @@ for ax, dataset in zip(axes, datasets):
             yerr=[lower, upper],
             marker="o",
             capsize=3,
-            label=family,
+            label=(
+                "task-specific"
+                if family == "task"
+                else family
+            ),
         )
 
     ax.axhline(
@@ -329,13 +333,22 @@ for ax, dataset in zip(axes, datasets):
 axes[0].set_ylabel(
     "Pretrained − Scratch bACC (pp)"
 )
+# Build one shared legend across all panels.
+handles_by_label = {}
 
-axes[-1].legend(
+for ax in axes:
+    handles, labels = ax.get_legend_handles_labels()
+
+    for handle, label in zip(handles, labels):
+        handles_by_label[label] = handle
+
+fig.legend(
+    handles_by_label.values(),
+    handles_by_label.keys(),
     title="Family",
-    bbox_to_anchor=(1.02, 1),
-    loc="upper left",
+    bbox_to_anchor=(1.01, 0.5),
+    loc="center left",
 )
-
 fig.suptitle(
     "Effect of corruption severity on the pretraining advantage"
 )

@@ -54,8 +54,8 @@ FAMILY_MAP = {
     ("pneumonia", "brightness_down"): "color",
     ("pneumonia", "contrast_up"): "color",
     ("pneumonia", "contrast_down"): "color",
-    ("pneumonia", "gamma_corr_up"): "color",
-    ("pneumonia", "gamma_corr_down"): "color",
+    ("pneumonia", "gamma_corr_up"): "task_specific",
+    ("pneumonia", "gamma_corr_down"): "task_specific",
 }
 
 
