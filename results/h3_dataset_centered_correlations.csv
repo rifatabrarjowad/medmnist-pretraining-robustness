@@ -1,0 +1,3 @@
+comparison,pearson_r,spearman_rho
+clean_vs_corrupted_gain,0.7360105777097384,0.6892857142857142
+clean_vs_BE_advantage,0.5769107993437914,0.4392857142857142
